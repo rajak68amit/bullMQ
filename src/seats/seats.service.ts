@@ -4,6 +4,8 @@ import Redis from 'ioredis';
 
 @Injectable()
 export class SeatsService implements OnModuleInit {
+     private seats = new Map<number, 'free' | 'locked' | 'booked'>();
+
   private redis: Redis;
 
   constructor() {
@@ -13,6 +15,8 @@ export class SeatsService implements OnModuleInit {
   async onModuleInit() {
     await this.initializeSeats(5); // demo: 5 seats
   }
+
+  
 
   async initializeSeats(total: number) {
     const exists = await this.redis.exists('seats:1');
@@ -44,4 +48,14 @@ export class SeatsService implements OnModuleInit {
 
     return result === 1;
   }
+
+  lockSeat(seatId: number): boolean {
+    if (this.seats.get(seatId) === 'free') {
+      this.seats.set(seatId, 'locked');
+      return true;
+    }
+    return false;
+  }
+
+
 }
