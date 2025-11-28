@@ -3,23 +3,27 @@ import { SeatsService } from '../seats/seats.service';
 
 @Processor('bookingQueue')
 export class BookingProcessor extends WorkerHost {
-  constructor(private readonly seatsService: SeatsService) { super(); }
+  constructor(private readonly seats: SeatsService) {
+    super();
+  }
 
   async process(job: any) {
-    console.log("Processing job:", job.id, job.data);
     const { seatId, user } = job.data;
-    const success = this.seatsService.lockSeat(seatId);
-       if (!success) {
-      throw new Error(`Seat ${seatId} already booked`);
+
+    if (job.name === 'bookSeat') {
+      const ok = this.seats.lock(seatId);
+      if (!ok) {
+        throw new Error(`Seat ${seatId} already locked/booked`);
+      }
+      // Add any side-effects here (notify, start payment, etc.)
+      return { status: 'locked', seatId, user };
     }
 
-    return { status: 'success', seatId, user };
-  }
+    if (job.name === 'releaseSeat') {
+      this.seats.release(seatId);
+      return { status: 'released', seatId };
+    }
 
-/*   async completed(job: any) {
-    const { seatId, user } = job.data;
-    this.seatsService.unlockSeat(seatId);
+    return { status: 'noop' };
   }
-} */
-
 }

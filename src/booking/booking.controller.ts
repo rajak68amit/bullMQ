@@ -1,19 +1,17 @@
-// booking/booking.controller.ts
 import { Controller, Post, Body } from '@nestjs/common';
 import { BookingService } from './booking.service';
 
 @Controller('booking')
 export class BookingController {
-  constructor(private readonly bookingService: BookingService) {}
+  constructor(private readonly booking: BookingService) {}
 
-  @Post()
-  async bookSeat(@Body() body: { seatId: number; user: string }) {
-    console.log('Received booking request:', body);
-    /* await this.bookingService.queueBooking(body.seatId, body.user);
-    return { message: `Booking request queued for Seat ${body.seatId}, User ${body.user}` }; */
-     const result = await this.bookingService.queueBooking(body.seatId, body.user);
-     console.log('Booking result:', result);
-  return result; // returns { status: 'success', seatId, user }
+  @Post('request')
+  async request(@Body() body: { seatId: number; user: string }) {
+    return this.booking.request(body.seatId, body.user);
+  }
 
+  @Post('confirm')
+  async confirm(@Body() body: { seatId: number; user: string }) {
+    return this.booking.confirm(body.seatId, body.user);
   }
 }

@@ -3,10 +3,10 @@ import { SeatsService } from './seats.service';
 
 @Controller('seats')
 export class SeatsController {
-  constructor(private readonly seatsService: SeatsService) { }
+  constructor(private readonly seats: SeatsService) {}
 
   @Get()
-  async getSeats() {
-    return await this.seatsService.getSeats();
+  get() {
+    return this.seats.list();
   }
 }

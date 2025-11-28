@@ -4,7 +4,6 @@ import { BookingProcessor } from './booking.processor';
 import { BookingController } from './booking.controller';
 import { SeatsModule } from '../seats/seats.module';
 
-
 @Module({
   imports: [SeatsModule],
   controllers: [BookingController],
